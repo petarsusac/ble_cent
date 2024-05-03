@@ -4,8 +4,8 @@
     "files.associations": {
     },
     "kconfig.zephyr.board": {
-        "board": "stm32f746g_disco",
-        "arch": "arm",
-        "dir": "/home/petar/zephyrproject/zephyr/boards/arm/stm32f746g_disco"
+        "board": "esp32c3_devkitm",
+        "arch": "espressif",
+        "dir": "/home/petar/zephyrproject/zephyr/boards/espressif/esp32c3_devkitm"
     }
 }
