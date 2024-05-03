@@ -3,6 +3,11 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
+
+#define UART_END_BYTE (0x00)
+
+#define UART_MSG_CONN_OK "CONNOK"
 
 int uart_send_blocking(const uint8_t *p_data, size_t len);
 

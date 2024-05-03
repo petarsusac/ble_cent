@@ -12,5 +12,7 @@ int uart_send_blocking(const uint8_t *p_data, size_t len)
         uart_poll_out(p_uart_dev, p_data[i]);
     }
 
+    uart_poll_out(p_uart_dev, UART_END_BYTE);
+
     return 0;
 }
