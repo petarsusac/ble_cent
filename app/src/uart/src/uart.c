@@ -30,7 +30,15 @@ int uart_register_rx_cb(uart_rx_cb_t p_cb)
     return err;
 }
 
-int uart_send_blocking(const uint8_t *p_data, size_t len)
+int uart_send_cmd(uart_cmd_t cmd)
+{
+    uart_poll_out(p_uart_dev, (uint8_t) cmd);
+    uart_poll_out(p_uart_dev, UART_END_BYTE);
+
+    return 0;
+}
+
+int uart_send_data(const uint8_t *p_data, size_t len)
 {
     for (size_t i = 0; i < len; i++)
     {

@@ -14,7 +14,7 @@ static void notif_rcv_cb(const void *data, uint16_t len)
 static void bt_connected_cb(void)
 {
 	LOG_INF("tHE BLuEToOTH DeVIcE IS COnNEcTED");
-	uart_send_blocking(UART_MSG_CONN_OK, strlen(UART_MSG_CONN_OK));
+	uart_send_cmd(UART_CMD_CONN_OK);
 }
 
 int main(void)
