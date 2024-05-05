@@ -13,6 +13,7 @@ typedef enum uart_cmd
 {
     UART_CMD_CONN_OK = 0,
     UART_CMD_START,
+    UART_CMD_SEND_DATA,
 } uart_cmd_t;
 
 typedef void (*uart_rx_cb_t)(const uint8_t *p_data, size_t len);
