@@ -7,13 +7,13 @@
 
 #define UART_RX_BUF_LEN (5U)
 
-#define UART_END_BYTE (0x00)
+#define UART_STOP_BYTE (0x00)
 
 typedef enum uart_cmd
 {
-    UART_CMD_CONN_OK = 0,
-    UART_CMD_START,
-    UART_CMD_SEND_DATA,
+    UART_CMD_CONN_OK = 0x01,
+    UART_CMD_START = 0x02,
+    UART_CMD_DATA = 0x03,
 } uart_cmd_t;
 
 typedef void (*uart_rx_cb_t)(const uint8_t *p_data, size_t len);
