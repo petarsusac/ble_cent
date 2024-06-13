@@ -89,15 +89,23 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
 	LOG_DBG("Device found: %s, RSSI: %d", addr_str, rssi);
 
-	bt_le_scan_stop();
-
-	err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &p_default_conn);
-
-	if (err)
+#ifdef CONFIG_APP_BLE_CONN_BY_ADDR
+	// Check the device address. We only want to connect to one specific device
+	if (0 == strncmp(CONFIG_APP_BLE_PERIPH_ADDR, addr_str, strlen(CONFIG_APP_BLE_PERIPH_ADDR)))
 	{
-		LOG_ERR("Failed to connect to %s", addr_str);
-		start_scan();
+#endif /* CONFIG_APP_BLE_CONN_BY_ADDR */
+		bt_le_scan_stop();
+
+		err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &p_default_conn);
+
+		if (err)
+		{
+			LOG_ERR("Failed to connect to %s", addr_str);
+			start_scan();
+		}
+#ifdef CONFIG_APP_BLE_CONN_BY_ADDR
 	}
+#endif /* CONFIG_APP_BLE_CONN_BY_ADDR */
 }
 
 static void start_scan(void)

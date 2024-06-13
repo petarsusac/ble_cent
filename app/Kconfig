@@ -13,3 +13,11 @@ endmenu
 module = APP
 module-str = APP
 source "subsys/logging/Kconfig.template.log_config"
+
+config APP_BLE_CONN_BY_ADDR
+    bool "Conenct by addres or to any available device"
+
+config APP_BLE_PERIPH_ADDR
+    string "The address of the peripheral to connect to"
+    depends on APP_BLE_CONN_BY_ADDR
+    
