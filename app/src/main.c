@@ -4,11 +4,9 @@
 #include "bt.h"
 #include "uart.h"
 
-#define DATA_BUF_SIZE (100U)
+#define INIT_DELAY_MS (1000U)
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_DBG);
-
-K_SEM_DEFINE(bt_start_sem, 0, 1);
 
 static void uart_rx_cb(const uint8_t *p_rx_buf, size_t len)
 {
@@ -17,12 +15,8 @@ static void uart_rx_cb(const uint8_t *p_rx_buf, size_t len)
 		uart_cmd_t cmd = (uart_cmd_t) p_rx_buf[0];
 		switch (cmd)
 		{
-			case UART_CMD_START:
-				k_sem_give(&bt_start_sem);
-			break;
-
 			default:
-				// Ignore other commands
+				// Ignore all commands
 			break;
 		}
 	}
@@ -42,11 +36,11 @@ static void bt_connected_cb(void)
 
 int main(void)
 {
-	uart_register_rx_cb(uart_rx_cb);
-
 	LOG_DBG("Start");
 
-	k_sem_take(&bt_start_sem, K_FOREVER);
+	uart_register_rx_cb(uart_rx_cb);
+	
+	k_msleep(INIT_DELAY_MS);
 
 	bt_register_notif_rcv_cb(notif_rcv_cb);
 	bt_start(bt_connected_cb);
