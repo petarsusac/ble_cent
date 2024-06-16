@@ -13,7 +13,7 @@ LOG_MODULE_REGISTER(bt, LOG_LEVEL_DBG);
 
 static void start_scan(void);
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type, struct net_buf_simple *ad);
-bool ad_data_parse_cb(struct bt_data *data, void *user_data);
+static bool ad_data_parse_cb(struct bt_data *data, void *user_data);
 static void subscribe_cb(struct bt_conn *conn, uint8_t err, struct bt_gatt_subscribe_params *params);
 static uint8_t notify_cb(struct bt_conn *conn, struct bt_gatt_subscribe_params *params, const void *data, uint16_t length);
 static uint8_t discover_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, struct bt_gatt_discover_params *params);
@@ -93,7 +93,7 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	bt_data_parse(ad, ad_data_parse_cb, (void *) addr);
 }
 
-bool ad_data_parse_cb(struct bt_data *data, void *user_data)
+static bool ad_data_parse_cb(struct bt_data *data, void *user_data)
 {
 	int err;
 	bt_addr_le_t *p_addr = user_data;
