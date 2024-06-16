@@ -194,7 +194,7 @@ static uint8_t discover_cb(struct bt_conn *conn,
 		sub_params.value_handle = bt_gatt_attr_value_handle(attr);
 
 		err = bt_gatt_discover(conn, &disc_params);
-		err = bt_gatt_discover(conn, &disc_params);
+
 		if (err) 
 		{
 			LOG_ERR("Discover descriptor failed (err %d)", err);
@@ -213,7 +213,6 @@ static uint8_t discover_cb(struct bt_conn *conn,
             if (p_user_subscribed_cb)
             {
                 p_user_subscribed_cb();
-                p_user_subscribed_cb = NULL;
             }
 		}
 
