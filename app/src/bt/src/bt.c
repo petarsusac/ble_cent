@@ -13,6 +13,7 @@ LOG_MODULE_REGISTER(bt, LOG_LEVEL_DBG);
 
 static void start_scan(void);
 static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type, struct net_buf_simple *ad);
+bool ad_data_parse_cb(struct bt_data *data, void *user_data);
 static void subscribe_cb(struct bt_conn *conn, uint8_t err, struct bt_gatt_subscribe_params *params);
 static uint8_t notify_cb(struct bt_conn *conn, struct bt_gatt_subscribe_params *params, const void *data, uint16_t length);
 static uint8_t discover_cb(struct bt_conn *conn, const struct bt_gatt_attr *attr, struct bt_gatt_discover_params *params);
@@ -89,23 +90,39 @@ static void device_found(const bt_addr_le_t *addr, int8_t rssi, uint8_t type,
 	bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
 	LOG_DBG("Device found: %s, RSSI: %d", addr_str, rssi);
 
-#ifdef CONFIG_APP_BLE_CONN_BY_ADDR
-	// Check the device address. We only want to connect to one specific device
-	if (0 == strncmp(CONFIG_APP_BLE_PERIPH_ADDR, addr_str, strlen(CONFIG_APP_BLE_PERIPH_ADDR)))
+	bt_data_parse(ad, ad_data_parse_cb, (void *) addr);
+}
+
+bool ad_data_parse_cb(struct bt_data *data, void *user_data)
+{
+	int err;
+	bt_addr_le_t *p_addr = user_data;
+	struct bt_uuid_128 adv_svc_uuid = BT_UUID_INIT_128(0x0);
+
+	if (BT_DATA_UUID128_ALL == data->type)
 	{
-#endif /* CONFIG_APP_BLE_CONN_BY_ADDR */
-		bt_le_scan_stop();
+		memcpy(adv_svc_uuid.val, data->data, sizeof(adv_svc_uuid.val));
 
-		err = bt_conn_le_create(addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &p_default_conn);
-
-		if (err)
+		if (0 == bt_uuid_cmp(&adv_svc_uuid.uuid, &vnd_svc_uuid.uuid))
 		{
-			LOG_ERR("Failed to connect to %s", addr_str);
-			start_scan();
+			bt_le_scan_stop();
+
+			LOG_DBG("Connecting...");
+			err = bt_conn_le_create(p_addr, BT_CONN_LE_CREATE_CONN, BT_LE_CONN_PARAM_DEFAULT, &p_default_conn);
+
+			if (err)
+			{
+				LOG_ERR("Failed to connect");
+				start_scan();
+			}
+
+			// Stop parsing the advertising data
+			return false;
 		}
-#ifdef CONFIG_APP_BLE_CONN_BY_ADDR
 	}
-#endif /* CONFIG_APP_BLE_CONN_BY_ADDR */
+
+	// Continue parsing
+	return true;
 }
 
 static void start_scan(void)
